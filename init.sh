@@ -21,7 +21,7 @@ fi
 if [[ $SERVER_OS == "DEB" ]]; then
     apt -y update
     apt -y upgrade
-    apt -y install fail2ban util-linux zram-config nodejs npm ca-certificates wget curl gnupg lsb-release
+    apt -y install fail2ban util-linux zram-config nodejs npm ca-certificates wget curl gnupg lsb-release neofetch
 
     # Install kernel-update
     if [[ ! -f /usr/local/bin/update-kernel ]]; then
@@ -104,11 +104,12 @@ fi
 
 # Configure NodeJS & NPM
 npm update -g
-npm install -g n
-/usr/local/bin/n stable
-
-# Install PM2
 npm install -g pm2
+
+# Add neofetch
+echo "" >> /root/.bashrc
+echo "clear" >> /root/.bashrc
+echo "neofetch" >> /root/.bashrc
 
 # End script
 # Go shutdown mark is process done
