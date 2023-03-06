@@ -21,7 +21,7 @@ fi
 if [[ $SERVER_OS == "DEB" ]]; then
     apt -y update
     apt -y upgrade
-    apt -y install fail2ban util-linux zram-config nodejs npm ca-certificates wget curl gnupg lsb-release neofetch
+    apt -y install fail2ban util-linux zram-config ca-certificates wget curl gnupg lsb-release neofetch
 
     # Install kernel-update
     if [[ ! -f /usr/local/bin/update-kernel ]]; then
@@ -89,7 +89,6 @@ rm -f /etc/sysctl.conf
 if [[ ! -f /etc/sysctl.conf ]]; then
     echo "# Sysctlconf" > /etc/sysctl.conf
     echo "kernel.randomize_va_space=1" >> /etc/sysctl.conf
-    echo "kernel.unprivileged_userns_clone=1" >> /etc/sysctl.conf
     echo "net.ipv4.conf.all.accept_source_route=0" >> /etc/sysctl.conf
     echo "net.ipv4.conf.all.forwarding=0" >> /etc/sysctl.conf
     echo "net.ipv6.conf.all.disable_ipv6=1" >> /etc/sysctl.conf
@@ -102,11 +101,10 @@ if [[ ! -f /etc/sysctl.conf ]]; then
     echo "net.ipv4.icmp_echo_ignore_all=0" >> /etc/sysctl.conf
     echo "net.ipv4.conf.all.log_martians=1" >> /etc/sysctl.conf
     echo "net.ipv4.icmp_echo_ignore_broadcasts=1" >> /etc/sysctl.conf
+    echo "vm.swappiness=50" >> /etc/sysctl.conf
+    echo "vm.vfs_cache_pressure=50" >> /etc/sysctl.conf
     sysctl -p
 fi
-
-# Configure NodeJS & NPM
-npm update -g
 
 # Add neofetch
 echo "" >> /root/.bashrc
