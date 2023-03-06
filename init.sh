@@ -6,9 +6,9 @@ set -eu
 
 # Detect OS
 OS_OUTPUT=$(cat /etc/*release)
-if echo $OS_OUTPUT | grep -q "CentOS" ; then
+if echo $OS_OUTPUT | grep -q -E "CentOS Linux 7|CentOS Linux 8|AlmaLinux-8|Rocky Linux" ; then
     SERVER_OS="RHEL"
-elif echo $OS_OUTPUT | grep -q "Ubuntu" ; then
+elif echo $OS_OUTPUT | grep -q -E "Ubuntu 18.04|Ubuntu 20.04|Ubuntu 20.10|Ubuntu 22.04" ; then
     SERVER_OS="DEB"
 else
     echo -e "Unsupported OS Installed."
@@ -17,12 +17,12 @@ else
 fi
 
 # Install package
-if [$SERVER_OS == "DEB"] ; then
+if [[ $SERVER_OS == "DEB" ]]; then
     apt -y update
     apt -y upgrade
     apt -f install
     apt -y install fail2ban util-linux zram-config nodejs npm
-elif [$SERVER_OS == "RHEL"] ; then
+elif [[ $SERVER_OS == "RHEL" ]]; then
     yum -y update
     yum -y upgrade
     dnf -y install fail2ban nodejs npm
