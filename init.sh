@@ -113,4 +113,4 @@ echo "neofetch" >> /root/.bashrc
 
 # End script
 # Go shutdown mark is process done
-reboot
+init 0
