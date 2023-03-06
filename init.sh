@@ -22,6 +22,10 @@ if [[ $SERVER_OS == "DEB" ]]; then
     apt -y upgrade
     apt -f install
     apt -y install fail2ban util-linux zram-config nodejs npm
+
+    # Configure date time
+    timedatectl set-timezone Asia/Jakarta
+    hostnamectl set-hostname sada-deploy
 elif [[ $SERVER_OS == "RHEL" ]]; then
     yum -y update
     yum -y upgrade
@@ -88,3 +92,7 @@ npm install -g n
 
 # Install PM2
 npm install -g pm2
+
+# End script
+# Go shutdown mark is process done
+init 0
