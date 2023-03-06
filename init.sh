@@ -38,6 +38,7 @@ if [[ $SERVER_OS == "DEB" ]]; then
     fi
     if [[ ! -f /etc/apt/sources.list.d/docker.list ]]; then
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+        apt -y update
         apt -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
         systemctl enable docker
     fi
