@@ -29,6 +29,9 @@ if [[ $SERVER_OS == "DEB" ]]; then
         chmod +x ubuntu-mainline-kernel.sh
         sudo mv ubuntu-mainline-kernel.sh /usr/local/bin/update-kernel
         /usr/local/bin/update-kernel -i --yes
+
+        # Fix package missing
+        apt -f -y install
     fi
 
     # Docker install
@@ -42,9 +45,6 @@ if [[ $SERVER_OS == "DEB" ]]; then
         apt -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
         systemctl enable docker
     fi
-
-    # Fix package missing
-    apt -f -y install
 
     # Configure date time
     timedatectl set-timezone Asia/Jakarta
