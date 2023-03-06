@@ -86,7 +86,7 @@ fi
 
 # Register sysctl.conf
 rm -f /etc/sysctl.conf
-if [[ -f /etc/sysctl.conf ]]; then
+if [[ ! -f /etc/sysctl.conf ]]; then
     echo "# Sysctlconf" > /etc/sysctl.conf
     echo "kernel.randomize_va_space=1" >> /etc/sysctl.conf
     echo "kernel.unprivileged_userns_clone=1" >> /etc/sysctl.conf
@@ -107,7 +107,6 @@ fi
 
 # Configure NodeJS & NPM
 npm update -g
-npm install -g pm2
 
 # Add neofetch
 echo "" >> /root/.bashrc
