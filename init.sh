@@ -46,44 +46,41 @@ ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
 ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ''
 
 # Allow 2222 SSHD port
-ufw allow 2222
+if [[ $SERVER_OS == "DEB" ]]; then
+    ufw allow 2222
+fi
 systemctl restart sshd
 
-# Install update & upgrade
-apt -y update
-apt -y upgrade
-
-# Install fail2ban
-apt -y install fail2ban
-
 # Configure fail2ban
-echo "[sshd]" > /etc/fail2ban/jail.local
-echo "enabled = true" >> /etc/fail2ban/jail.local
-echo "port = ssh" >> /etc/fail2ban/jail.local
-echo "filter = sshd" >> /etc/fail2ban/jail.local
-echo "logpath = /var/log/auth.log" >> /etc/fail2ban/jail.local
-echo "maxretry = 3" >> /etc/fail2ban/jail.local
-echo "findtime = 300" >> /etc/fail2ban/jail.local
-echo "bantime = 3600" >> /etc/fail2ban/jail.local
-echo "ignoreip = 127.0.0.1" >> /etc/fail2ban/jail.local
-systemctl enable fail2ban
+if [[ ! -f /etc/fail2ban/jail.local ]]; then
+    echo "[sshd]" > /etc/fail2ban/jail.local
+    echo "enabled = true" >> /etc/fail2ban/jail.local
+    echo "port = ssh" >> /etc/fail2ban/jail.local
+    echo "filter = sshd" >> /etc/fail2ban/jail.local
+    echo "logpath = /var/log/auth.log" >> /etc/fail2ban/jail.local
+    echo "maxretry = 3" >> /etc/fail2ban/jail.local
+    echo "findtime = 300" >> /etc/fail2ban/jail.local
+    echo "bantime = 3600" >> /etc/fail2ban/jail.local
+    echo "ignoreip = 127.0.0.1" >> /etc/fail2ban/jail.local
+fi
 
 # Register sysctl.conf
-echo "kernel.randomize_va_space=1" >> /etc/sysctl.conf
-echo "kernel.unprivileged_userns_clone=1" >> /etc/sysctl.conf
-echo "net.ipv4.conf.all.accept_source_route=0" >> /etc/sysctl.conf
-echo "net.ipv4.conf.all.forwarding=0" >> /etc/sysctl.conf
-echo "net.ipv6.conf.all.disable_ipv6=1" >> /etc/sysctl.conf
-echo "net.ipv6.conf.default.disable_ipv6=1" >> /etc/sysctl.conf
-echo "net.ipv6.conf.lo.disable_ipv6=1" >> /etc/sysctl.conf
-echo "net.ipv4.conf.all.accept_redirects=0" >> /etc/sysctl.conf
-echo "net.ipv4.conf.all.secure_redirects=0" >> /etc/sysctl.conf
-echo "net.ipv4.conf.all.send_redirects=0" >> /etc/sysctl.conf
-echo "net.ipv4.conf.all.rp_filter=1" >> /etc/sysctl.conf
-echo "net.ipv4.icmp_echo_ignore_all=0" >> /etc/sysctl.conf
-echo "net.ipv4.conf.all.log_martians=1" >> /etc/sysctl.conf
-echo "net.ipv4.icmp_echo_ignore_broadcasts=1" >> /etc/sysctl.conf
-sysctl -p
+if [[ ! -f /etc/sysctl.conf ]]; then
+    echo "kernel.randomize_va_space=1" >> /etc/sysctl.conf
+    echo "kernel.unprivileged_userns_clone=1" >> /etc/sysctl.conf
+    echo "net.ipv4.conf.all.accept_source_route=0" >> /etc/sysctl.conf
+    echo "net.ipv4.conf.all.forwarding=0" >> /etc/sysctl.conf
+    echo "net.ipv6.conf.all.disable_ipv6=1" >> /etc/sysctl.conf
+    echo "net.ipv6.conf.default.disable_ipv6=1" >> /etc/sysctl.conf
+    echo "net.ipv6.conf.lo.disable_ipv6=1" >> /etc/sysctl.conf
+    echo "net.ipv4.conf.all.accept_redirects=0" >> /etc/sysctl.conf
+    echo "net.ipv4.conf.all.secure_redirects=0" >> /etc/sysctl.conf
+    echo "net.ipv4.conf.all.send_redirects=0" >> /etc/sysctl.conf
+    echo "net.ipv4.conf.all.rp_filter=1" >> /etc/sysctl.conf
+    echo "net.ipv4.icmp_echo_ignore_all=0" >> /etc/sysctl.conf
+    echo "net.ipv4.conf.all.log_martians=1" >> /etc/sysctl.conf
+    echo "net.ipv4.icmp_echo_ignore_broadcasts=1" >> /etc/sysctl.conf
+fi
 
 # Configure NodeJS & NPM
 npm update -g
@@ -95,4 +92,4 @@ npm install -g pm2
 
 # End script
 # Go shutdown mark is process done
-init 0
+# init 0
