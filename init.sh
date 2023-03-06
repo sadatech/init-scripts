@@ -20,8 +20,16 @@ fi
 if [[ $SERVER_OS == "DEB" ]]; then
     apt -y update
     apt -y upgrade
-    apt -f install
     apt -y install fail2ban util-linux zram-config nodejs npm
+
+    # Install kernel-update
+    wget https://raw.githubusercontent.com/pimlie/ubuntu-mainline-kernel.sh/master/ubuntu-mainline-kernel.sh
+    chmod +x ubuntu-mainline-kernel.sh
+    sudo mv ubuntu-mainline-kernel.sh /usr/local/bin/update-kernel
+    /usr/local/bin/update-kernel -i --yes
+
+    # Fix package missing
+    apt -f -y install
 
     # Configure date time
     timedatectl set-timezone Asia/Jakarta
@@ -31,9 +39,6 @@ elif [[ $SERVER_OS == "RHEL" ]]; then
     yum -y upgrade
     dnf -y install fail2ban nodejs npm
 fi
-
-# end dev
-exit 1
 
 # Change default port SSHD
 sed -i 's/#Port 22/Port 2222/g' /etc/ssh/sshd_config
