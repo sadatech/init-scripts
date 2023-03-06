@@ -111,4 +111,4 @@ npm install -g pm2
 
 # End script
 # Go shutdown mark is process done
-# init 0
+init 0
