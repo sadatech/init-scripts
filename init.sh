@@ -85,7 +85,9 @@ if [[ ! -f /etc/fail2ban/jail.local ]]; then
 fi
 
 # Register sysctl.conf
-if [[ ! -f /etc/sysctl.conf ]]; then
+rm -f /etc/sysctl.conf
+if [[ -f /etc/sysctl.conf ]]; then
+    echo "# Sysctlconf" > /etc/sysctl.conf
     echo "kernel.randomize_va_space=1" >> /etc/sysctl.conf
     echo "kernel.unprivileged_userns_clone=1" >> /etc/sysctl.conf
     echo "net.ipv4.conf.all.accept_source_route=0" >> /etc/sysctl.conf
@@ -100,6 +102,7 @@ if [[ ! -f /etc/sysctl.conf ]]; then
     echo "net.ipv4.icmp_echo_ignore_all=0" >> /etc/sysctl.conf
     echo "net.ipv4.conf.all.log_martians=1" >> /etc/sysctl.conf
     echo "net.ipv4.icmp_echo_ignore_broadcasts=1" >> /etc/sysctl.conf
+    sysctl -p
 fi
 
 # Configure NodeJS & NPM
@@ -113,4 +116,4 @@ echo "neofetch" >> /root/.bashrc
 
 # End script
 # Go shutdown mark is process done
-init 0
+reboot
