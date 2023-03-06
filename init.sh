@@ -17,12 +17,12 @@ else
 fi
 
 # Install package
-if $SERVER_OS == "DEB" ; then
+if [$SERVER_OS == "DEB"] ; then
     apt -y update
     apt -y upgrade
     apt -f install
     apt -y install fail2ban util-linux zram-config nodejs npm
-elif $SERVER_OS == "RHEL" ; then
+elif [$SERVER_OS == "RHEL"] ; then
     yum -y update
     yum -y upgrade
     dnf -y install fail2ban nodejs npm
