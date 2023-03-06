@@ -3,6 +3,7 @@
 # one line script
 #
 set -eu
+DEBIAN_FRONTEND=noninteractive
 
 # Detect OS
 OS_OUTPUT=$(cat /etc/*release)
@@ -20,13 +21,26 @@ fi
 if [[ $SERVER_OS == "DEB" ]]; then
     apt -y update
     apt -y upgrade
-    apt -y install fail2ban util-linux zram-config nodejs npm
+    apt -y install fail2ban util-linux zram-config nodejs npm ca-certificates wget curl gnupg lsb-release
 
     # Install kernel-update
-    wget https://raw.githubusercontent.com/pimlie/ubuntu-mainline-kernel.sh/master/ubuntu-mainline-kernel.sh
-    chmod +x ubuntu-mainline-kernel.sh
-    sudo mv ubuntu-mainline-kernel.sh /usr/local/bin/update-kernel
-    /usr/local/bin/update-kernel -i --yes
+    if [[ ! -f /usr/local/bin/update-kernel ]]; then
+        wget https://raw.githubusercontent.com/pimlie/ubuntu-mainline-kernel.sh/master/ubuntu-mainline-kernel.sh
+        chmod +x ubuntu-mainline-kernel.sh
+        sudo mv ubuntu-mainline-kernel.sh /usr/local/bin/update-kernel
+        /usr/local/bin/update-kernel -i --yes
+    fi
+
+    # Docker install
+    mkdir -m 0755 -p /etc/apt/keyrings
+    if [[ ! -f /etc/apt/keyrings/docker.gpg ]]; then
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    fi
+    if [[ ! -f /etc/apt/sources.list.d/docker.list ]]; then
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+        apt -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+        systemctl enable docker
+    fi
 
     # Fix package missing
     apt -f -y install
@@ -42,13 +56,13 @@ fi
 
 # Change default port SSHD
 sed -i 's/#Port 22/Port 2222/g' /etc/ssh/sshd_config
-sed -i 's/#HostKey \/etc\/ssh\/ssh_host_rsa/HostKey \/etc\/ssh\/ssh_host_rsa/g' /etc/ssh/sshd_config
-sed -i 's/#HostKey \/etc\/ssh\/ssh_host_ecdsa/HostKey \/etc\/ssh\/ssh_host_ecdsa/g' /etc/ssh/sshd_config
+# sed -i 's/#HostKey \/etc\/ssh\/ssh_host_rsa/HostKey \/etc\/ssh\/ssh_host_rsa/g' /etc/ssh/sshd_config
+# sed -i 's/#HostKey \/etc\/ssh\/ssh_host_ecdsa/HostKey \/etc\/ssh\/ssh_host_ecdsa/g' /etc/ssh/sshd_config
 
 # Configure SSH key
-ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
-ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
-ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ''
+# ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+# ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
+# ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ''
 
 # Allow 2222 SSHD port
 if [[ $SERVER_OS == "DEB" ]]; then
